@@ -1,0 +1,29 @@
+lib: "./lib"
+name: "print services"
+tests: "./test"
+dist: "./dist"
+functions:
+  - name: htmltopdf
+    directory: /Users/raojinlin/dev/python/printing-pdf-services/htmltopdf/
+    index: index.merge_pdf
+    requirements:
+      - requests
+      - pdfkit
+      - PyPdf2
+      - reportlab
+    services:
+      - printpdf
+    modules:
+      - utils.py
+  - name: printpdf
+    directory: /Users/raojinlin/dev/python/printing-pdf-services/
+    index: index.print_pdf
+    requirements:
+      - requests
+      - PyPdf2
+      - reportlab
+    modules:
+      - utils.py
+
+requirements:
+  - unittest

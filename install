@@ -1,0 +1,12 @@
+#!/bin/bash
+
+INSTALL_DIR=$(python3 -c 'import sysconfig;print(sysconfig.get_paths().get("platlib"))')
+
+bin='./fcrelease/bin/fcrelease'
+
+BIN_DIR="$1"
+if [[ -z "$1" ]]; then
+  BIN_DIR=~/bin/fcrelease
+fi
+
+sudo cp -apv $bin $BIN_DIR && cp -vr ./fcrelease $INSTALL_DIR

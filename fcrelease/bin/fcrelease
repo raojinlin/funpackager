@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# encoding: utf-8
+
+import argparse
+
+from fcrelease.loader import ConfigLoader
+from fcrelease.manager import Manager
+
+
+def main():
+    prog = argparse.ArgumentParser(description='阿里云函数计算 多函数代码共享发布')
+    prog.add_argument('--config', '-c', metavar='c', required=True, help='配置文件, 支持json, yaml')
+    prog.add_argument('--dist', '-d', nargs='?', help='输出文件夹')
+    prog.add_argument('--release', '-r', help='发布', action='store_true')
+    prog.add_argument('--list', '-L', action='store_true', help='列出配置文件中的函数')
+    prog.add_argument('--function', '-f', nargs='+', help='指定函数')
+    prog.add_argument('--debug', '-D', action='store_true', help='调试输出')
+
+    args = prog.parse_args()
+
+    loader = ConfigLoader(args.config, args.debug)
+    config = loader.get_config()
+    manager = Manager(config, args.debug)
+
+    if args.dist:
+        config.set_dist(loader.get_real_path(args.dist))
+
+    if args.function:
+        for service in args.function:
+            manager.has_function_check(service)
+        for service in args.function:
+            if args.release:
+                manager.release(service)
+            elif args.list:
+                manager.print_services(service)
+    elif args.list:
+        manager.print_services()
+
+
+if __name__ == '__main__':
+    main()
