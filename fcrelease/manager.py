@@ -29,9 +29,10 @@ class Manager(object):
 
     def copy_dir(self, src, dst):
         if os.path.isdir(dst):
+            self.logger.debug('rm exists path ' + dst)
             shutil.rmtree(dst)
-        else:
-            shutil.copytree(src, dst)
+
+        shutil.copytree(src, dst)
 
     def release(self, function_name):
         self.has_function_check(function_name)

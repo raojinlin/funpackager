@@ -9,7 +9,7 @@ from fcrelease.manager import Manager
 
 def main():
     prog = argparse.ArgumentParser(description='阿里云函数计算 多函数代码共享发布')
-    prog.add_argument('--config', '-c', metavar='c', required=True, help='配置文件, 支持json, yaml')
+    prog.add_argument('--config', '-c', metavar='c', help='配置文件, 支持json, yaml')
     prog.add_argument('--dist', '-d', nargs='?', help='输出文件夹')
     prog.add_argument('--release', '-r', help='发布', action='store_true')
     prog.add_argument('--list', '-L', action='store_true', help='列出配置文件中的函数')
@@ -18,7 +18,7 @@ def main():
 
     args = prog.parse_args()
 
-    loader = ConfigLoader(args.config, args.debug)
+    loader = ConfigLoader(args.config or 'config.yaml', args.debug)
     config = loader.get_config()
     manager = Manager(config, args.debug)
 
