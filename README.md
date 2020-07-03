@@ -48,6 +48,12 @@ functions:
 
 ```
 
+## Install
+
+```bash
+$ python3 setup.py install
+```
+
 
 ## Command line options
 

@@ -32,7 +32,7 @@ class Manager(object):
             self.logger.debug('rm exists path ' + dst)
             shutil.rmtree(dst)
 
-        shutil.copytree(src, dst)
+        shutil.copytree(src, dst, symlinks=True)
 
     def release(self, function_name):
         self.has_function_check(function_name)
