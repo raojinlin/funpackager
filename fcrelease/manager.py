@@ -78,6 +78,8 @@ class Manager(object):
 
         self.write_sign_file(dist_dir)
 
+        return dist_dir
+
     def get_service_requirements(self, service):
         self.logger.debug("get depend function requirements")
 

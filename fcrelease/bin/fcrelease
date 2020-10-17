@@ -30,7 +30,7 @@ def main():
             manager.has_function_check(service)
         for service in args.function:
             if args.release:
-                manager.release(service)
+                print(manager.release(service))
             elif args.list:
                 manager.print_services(service)
     elif args.list:
