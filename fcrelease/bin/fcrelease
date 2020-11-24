@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+import os
+import sys
 import argparse
 
 from fcrelease.loader import ConfigLoader
@@ -15,6 +17,9 @@ def main():
     prog.add_argument('--list', '-L', action='store_true', help='列出配置文件中的函数')
     prog.add_argument('--function', '-f', nargs='+', help='指定函数')
     prog.add_argument('--debug', '-D', action='store_true', help='调试输出')
+    prog.add_argument('--message', '-m', type=str, help='发布说明')
+    prog.add_argument('--tag', '-t', type=str, help='添加标签')
+    prog.add_argument('--publisher', '-p', type=str, help='发布者，默认取环境变量中的USER')
 
     args = prog.parse_args()
 
@@ -28,9 +33,24 @@ def main():
     if args.function:
         for service in args.function:
             manager.has_function_check(service)
+
         for service in args.function:
             if args.release:
-                print(manager.release(service))
+                tag = args.tag
+                if not tag:
+                    tag = None
+                else:
+                    tag = tag.replace(' ', '_')
+
+                if not args.message:
+                    sys.stderr.write("release message required\n")
+                    sys.exit(1)
+
+                publisher = args.publisher
+                if not publisher:
+                    publisher = os.environ.get('USER')
+
+                print(manager.release(service, tag, args.message, publisher=publisher))
             elif args.list:
                 manager.print_services(service)
     elif args.list:
@@ -38,4 +58,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        sys.stderr.write("%s\n" % str(e))
+        sys.exit(1)

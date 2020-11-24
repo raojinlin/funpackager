@@ -21,10 +21,14 @@ class Manager(object):
             return
         os.mkdir(path)
 
-    def get_function_dist(self, function):
-        return os.path.join(self._config.get_dist(), os.path.basename(function.get_directory()) + "_dist")
+    def get_function_distdir(self, function, tag=None):
+        suffix = tag
+        if not suffix:
+            suffix = 'dist'
+        return os.path.join(self._config.get_dist(), os.path.basename(function.get_directory()) + "_" + suffix)
 
-    def get_function_dirname(self, function):
+    @staticmethod
+    def get_function_dirname(function):
         return os.path.basename(function.get_directory())
 
     def copy_dir(self, src, dst):
@@ -34,13 +38,13 @@ class Manager(object):
 
         shutil.copytree(src, dst, symlinks=True)
 
-    def release(self, function_name):
+    def release(self, function_name, tag=None, message='', publisher=None):
         self.has_function_check(function_name)
         service = self._config.get_function(function_name)
 
         self._mkdir(self._config.get_dist())
 
-        dist_dir = self.get_function_dist(service)
+        dist_dir = self.get_function_distdir(service, tag)
         service_dist_directory = os.path.join(dist_dir, self.get_function_dirname(service))
 
         self.logger.debug('copy function directory "%s" => "%s"' % (service.get_directory(), service_dist_directory))
@@ -76,7 +80,7 @@ class Manager(object):
             else:
                 self.copy_dir(module_src, module_dst)
 
-        self.write_sign_file(dist_dir)
+        self.write_signed_file(dist_dir, tag=tag, message=message, publisher=publisher)
 
         return dist_dir
 
@@ -98,11 +102,16 @@ class Manager(object):
 
         return requirements
 
-    def write_sign_file(self, path, message=''):
-        with open(os.path.join(path, '.fcrelease'), 'wt') as sign_file:
-            sign_file.write("Created by fcrelease at %s.\n" % time.strftime('%F %T'))
+    def write_signed_file(self, path, filename='.release', publisher='fcrelease', tag='', message=''):
+        self.logger.debug('written signed file, tag: ' + tag)
+        with open(os.path.join(path, filename), 'wt') as sign_file:
+            sign_file.write("Created by %s at %s.\n" % (publisher, time.strftime('%F %T')))
+
+            if tag != '':
+                sign_file.write("Tag: " + tag)
 
             if message != '':
+                sign_file.write("\n\n")
                 sign_file.write(message)
 
     def print_services(self, service_name=None):
