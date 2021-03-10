@@ -1,14 +1,14 @@
 from os import path
 
-from fcrelease.loader.factory import get_loader
-from fcrelease.config import Config
-from fcrelease.function import Function
+from funpackager.loader.factory import get_loader
+from funpackager.config import Config
+from funpackager.function import Function
 
-from fcrelease.checkers import function_directory_checker
-from fcrelease.checkers import function_depend_checker
-from fcrelease.checkers import function_index_checker
-from fcrelease.checkers import function_module_checker
-from fcrelease.logger import get_logger
+from funpackager.checkers import function_directory_checker
+from funpackager.checkers import function_depend_checker
+from funpackager.checkers import function_index_checker
+from funpackager.checkers import function_module_checker
+from funpackager.logger import get_logger
 
 
 class ConfigLoader(object):

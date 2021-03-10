@@ -1,6 +1,6 @@
 import yaml
 
-from fcrelease.loader.abstractLoader import AbstractLoader
+from funpackager.loader.abstractLoader import AbstractLoader
 
 
 class YamlLoader(AbstractLoader):

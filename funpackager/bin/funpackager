@@ -5,8 +5,8 @@ import os
 import sys
 import argparse
 
-from fcrelease.loader import ConfigLoader
-from fcrelease.manager import Manager
+from funpackager.loader import ConfigLoader
+from funpackager.manager import Manager
 
 
 def main():

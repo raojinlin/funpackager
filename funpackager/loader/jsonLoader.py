@@ -1,6 +1,6 @@
 import json
 
-from fcrelease.loader.abstractLoader import AbstractLoader
+from funpackager.loader.abstractLoader import AbstractLoader
 
 
 class JSONLoader(AbstractLoader):

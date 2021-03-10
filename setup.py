@@ -6,14 +6,17 @@ with open('README.md', 'rt') as readme:
 
 
 setuptools.setup(
-    name='fcrelease',
+    name='funpackager',
     version='0.0.0',
     author='raojinlin',
     author_email='1239015423@qq.com',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=setuptools.find_packages(),
-    scripts=['fcrelease/bin/fcrelease'],
+    packages=setuptools.find_packages(include=[
+        'funpackager',
+        'funpackager/bin/*'
+    ]),
+    scripts=['funpackager/bin/funpackager'],
     install_requires=[
         'PyYAML'
     ],

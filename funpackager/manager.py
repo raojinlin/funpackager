@@ -2,10 +2,10 @@ import os
 import shutil
 import time
 
-from fcrelease.logger import get_logger
-from fcrelease.config import Config
-from fcrelease.checkers import service_checker
-from fcrelease.utils import get_indent_spaces
+from funpackager.logger import get_logger
+from funpackager.config import Config
+from funpackager.checkers import service_checker
+from funpackager.utils import get_indent_spaces
 
 
 class Manager(object):
@@ -30,6 +30,22 @@ class Manager(object):
     @staticmethod
     def get_function_dirname(function):
         return os.path.basename(function.get_directory())
+
+    def get_dist_least_tag(self, function):
+        """
+        :param function: Function
+        :return:
+        """
+        dist_dir = self._config.get_dist()
+        dirs = []
+        for d in sorted(os.listdir(dist_dir)):
+            if d.startswith(function.get_name()):
+                dirs.append(d)
+
+        if len(dirs) == 0:
+            return "least"
+
+        return dirs.pop().split('_').pop()
 
     def copy_dir(self, src, dst):
         if os.path.isdir(dst):
@@ -56,7 +72,8 @@ class Manager(object):
         self.logger.debug('copy function index file "%s" => "%s"' % (index_src, index_dst))
         shutil.copy(index_src, index_dst)
 
-        for requirement in self.get_service_requirements(service):
+        requirements, modules = self.get_service_requirements(service)
+        for requirement in requirements:
             requirement_src = os.path.join(self._config.get_lib(), requirement)
             requirement_dst = os.path.join(dist_dir, requirement)
 
@@ -70,7 +87,7 @@ class Manager(object):
             self.logger.debug('copy function "%s" => "%s"' % (depend_service, function_name))
             self.copy_dir(service_src, service_dst)
 
-        for module in service.get_modules():
+        for module in modules:
             module_src = os.path.join(self._config.get_base_path(), module)
             module_dst = os.path.join(dist_dir, module)
 
@@ -87,22 +104,26 @@ class Manager(object):
     def get_service_requirements(self, service):
         self.logger.debug("get depend function requirements")
 
-        requirements = []
-        for requirement in service.get_requirements():
-            requirements.append(requirement)
+        modules = set(service.get_modules())
+        requirements = set(service.get_requirements())
 
         for service_name in service.get_functions():
             depend_service = self._config.get_function(service_name)
             self.logger.debug("get function %s requirements" % service_name)
             for depend_service_requirement in depend_service.get_requirements():
                 if depend_service_requirement not in requirements:
-                    requirements.append(depend_service_requirement)
+                    requirements.add(depend_service_requirement)
 
                     self.logger.debug("add requirement '%s'" % depend_service_requirement)
 
-        return requirements
+            for depend_module in depend_service.get_modules():
+                if depend_module not in modules:
+                    modules.add(depend_module)
+                    self.logger.debug("add requirement module '%s'" % depend_module)
 
-    def write_signed_file(self, path, filename='.release', publisher='fcrelease', tag='', message=''):
+        return requirements, modules
+
+    def write_signed_file(self, path, filename='.release', publisher='funpackager', tag='', message=''):
         self.logger.debug('written signed file, tag: ' + tag)
         with open(os.path.join(path, filename), 'wt') as sign_file:
             sign_file.write("Created by %s at %s.\n" % (publisher, time.strftime('%F %T')))
@@ -117,12 +138,14 @@ class Manager(object):
     def print_services(self, service_name=None):
         for service in self._config.get_functions():
             if not service_name or service_name == service.get_name():
+                requirements, modules = self.get_service_requirements(service)
                 print(get_indent_spaces(level=0) + "Function %s:" % service.get_name())
                 print(get_indent_spaces() + "Directory: %s" % service.get_directory())
                 print(get_indent_spaces() + "Index: %s" % service.get_index())
-                print(get_indent_spaces() + "Requirements: [%s]" % ", ".join(service.get_requirements()))
+                print(get_indent_spaces() + "Requirements: [%s]" % ", ".join(requirements))
                 print(get_indent_spaces() + "Functions: [%s]" % ", ".join(service.get_functions()))
-                print(get_indent_spaces() + "Modules: [%s]" % ", ".join(service.get_modules()))
+                print(get_indent_spaces() + "Modules: [%s]" % ", ".join(modules))
+                print(get_indent_spaces() + "Tag: %s" % self.get_dist_least_tag(service))
                 print("")
 
 

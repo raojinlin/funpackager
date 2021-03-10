@@ -1,9 +1,9 @@
 import os
 
-from fcrelease.loader.abstractLoader import AbstractLoader
-from fcrelease.loader.abstractLoaderFactory import AbstractLoaderFactory
-from fcrelease.loader.yamlLoaderFactory import YamlLoaderFactory
-from fcrelease.loader.jsonLoaderFactory import JSONLoaderFactory
+from funpackager.loader.abstractLoader import AbstractLoader
+from funpackager.loader.abstractLoaderFactory import AbstractLoaderFactory
+from funpackager.loader.yamlLoaderFactory import YamlLoaderFactory
+from funpackager.loader.jsonLoaderFactory import JSONLoaderFactory
 
 
 def _get_file_type(config_file):

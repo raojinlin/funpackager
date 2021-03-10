@@ -1,5 +1,5 @@
 from os import path
-from fcrelease.loader.notFoundConfigException import NotFoundConfigException
+from funpackager.loader.notFoundConfigException import NotFoundConfigException
 
 
 class AbstractLoader(object):
